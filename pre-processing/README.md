@@ -8,6 +8,7 @@ We focused on these methods for the pre-processing
 4. Add Synonyms List
 5. Add Antonyms List
 6. Lemmatization (Verb, Noun, Adjective, Adverb)
+7. POS Tagging
 
 ## Outut Structure
 [
