@@ -11,9 +11,14 @@ from nltk.corpus.reader.wordnet import WordNetError
 from threading import Thread
 
 from printer import  Printer
+import sys
+import re
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 # basePath = "/home/suthagar/Desktop/tmp/1billion/"
-basePath = "/media/suthagar/Data/Corpus/1-billion-word-language-modeling-benchmark-r13output/heldout-monolingual.tokenized.shuffled/"
+basePath = "/home/piraveena/Downloads/1-billion-word-language-modeling-benchmark-r13output/heldout-monolingual.tokenized.shuffled/"
 
 outputPath = basePath + "output/"
 lemmatizer = WordNetLemmatizer()
@@ -33,6 +38,9 @@ def runCodeForLine(line,index):
     sentenceOut = {}
     for sentence in sentencesInLine:
 
+        sentence = re.sub(r'(https|http|ftp)?\s*:\s*\/\s*\/\s*(\w|\s*\.|\/|\?|\=|\&|\%)*\b', '', sentence)
+        sentence= ''.join(e for e in sentence if e.isalpha() or e.isspace())
+
         sentenceCounter = str(sentCounter)
         sentenceOut[sentenceCounter] = {}
         sentenceOut[sentenceCounter]['actual'] = sentence
@@ -43,6 +51,7 @@ def runCodeForLine(line,index):
         wordCounter = 0
         wordOut = {}
         for token in words:
+
             strWordCounter = str(wordCounter)
             wordCounter += 1
 
@@ -107,11 +116,11 @@ def readByLines(processId, corpusLines, startLine, endLine, counter, isMultiProc
         output[index] = outLine[index]
 
 
-totalReadFilesCount = 10
+totalReadFilesCount = 1
 output ={}
 startTime = datetime.now()
 print("Process started : ", startTime)
-print("Total Files : ",totalReadFilesCount, end="\n")
+print("Total Files : ",totalReadFilesCount,"\n")
 for i in range(0, totalReadFilesCount):
     output = {}
     counter = 0;
