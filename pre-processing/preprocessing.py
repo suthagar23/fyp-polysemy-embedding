@@ -5,6 +5,7 @@ from nltk.corpus import wordnet
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
+from nltk.tag import pos_tag
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus.reader.wordnet import WordNetError
 # import multiprocessing as mp
@@ -62,6 +63,9 @@ def runCodeForLine(line,index):
             else:
                 wordOut[strWordCounter]['isStopWord'] = False
 
+
+                #POS Tag from nltk
+                wordOut[strWordCounter]['posTag']=pos_tag([token])[0][1]
                 # find Synonyms,Antonyms from WordNet
                 synonyms = []
                 antonyms = []
