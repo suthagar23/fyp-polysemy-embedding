@@ -1,6 +1,8 @@
 
 import json
 from datetime import datetime
+
+import nltk
 from nltk.corpus import wordnet
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize
@@ -25,6 +27,7 @@ outputPath = basePath + "output/"
 lemmatizer = WordNetLemmatizer()
 linePrinter = Printer()
 cachedStopWords = stopwords.words("english")
+listToken = []
 
 
 def runCodeForLine(line,index):
@@ -39,19 +42,22 @@ def runCodeForLine(line,index):
     sentenceOut = {}
     for sentence in sentencesInLine:
 
-        sentence = re.sub(r'(https|http|ftp)?\s*:\s*\/\s*\/\s*(\w|\s*\.|\/|\?|\=|\&|\%)*\b', '', sentence)
-        sentence= ''.join(e for e in sentence if e.isalpha() or e.isspace())
+        # sentence = re.sub(r'(https|http|ftp)?\s*:\s*\/\s*\/\s*(\w{3}\s*\.|\/|\?|\=|\&|\%)*\b', '', sentence)
+        sentence =re.sub(r'((https|http|ftp)\s*:\s*\/\s*\/\s*)?(\w{3}\s*\.).*(\.).*', '', sentence)
+        sentence = ''.join(e for e in sentence if e.isalpha() or e.isspace())
 
         sentenceCounter = str(sentCounter)
         sentenceOut[sentenceCounter] = {}
         sentenceOut[sentenceCounter]['actual'] = sentence
         sentenceOut[sentenceCounter]['words'] = {}
-        words = (word_tokenize(sentence))
+        words = word_tokenize(sentence)
         sentenceOut[sentenceCounter]['words']['wordTokenize'] = words
         sentenceOut[sentenceCounter]['words']['info'] = {}
         wordCounter = 0
         wordOut = {}
+
         for token in words:
+            listToken.append(token)
 
             strWordCounter = str(wordCounter)
             wordCounter += 1
@@ -120,7 +126,25 @@ def readByLines(processId, corpusLines, startLine, endLine, counter, isMultiProc
         output[index] = outLine[index]
 
 
-totalReadFilesCount = 1
+# finding trigram
+def trigram (trigramsCount):
+
+    trigramMeasures = nltk.collocations.TrigramAssocMeasures()
+    finder = nltk.TrigramCollocationFinder.from_words(listToken)
+    finder.apply_freq_filter(3)
+    listTrigram = finder.nbest(trigramMeasures.pmi, trigramsCount)
+
+    outputTrigramFileName = "trigramOutput.txt"
+    outputTrigramFile = open(outputPath + outputTrigramFileName, "w+")
+
+    for i in listTrigram:
+        trigram = '_'.join(str(e) for e in i)
+        outputTrigramFile.write(trigram + "\n")
+    outputTrigramFile.close()
+    print("Total number of words: "+ str(len(listToken)))
+
+
+totalReadFilesCount = 50
 output ={}
 startTime = datetime.now()
 print("Process started : ", startTime)
@@ -129,7 +153,10 @@ for i in range(0, totalReadFilesCount):
     output = {}
     counter = 0;
     totalProcess = 1;
-    inputFileName =  "news.en.heldout-0000" + str(i) + "-of-00050" # heldout-00005-of-00050
+    if(i<10):
+        inputFileName =  "news.en.heldout-0000" + str(i) + "-of-00050" # heldout-00005-of-00050
+    else:
+        inputFileName = "news.en.heldout-000" + str(i) + "-of-00050"
     print("\nStarted File ", i, " - ", inputFileName)
     print("-------------------------------------------------")
     outputFileName =  "corpus-file-0" + str(i) + "- PID" + str(totalProcess) + "-output.txt"
@@ -181,8 +208,15 @@ for i in range(0, totalReadFilesCount):
     print("\n\nOutput File : ", outputPath + outputFileName)
 
 endTime = datetime.now()
+
+# trigram using nltk
+no_of_trigrams = 5000
+trigram(no_of_trigrams)
+
+
 print("\n\n Process Stopped : ", endTime)
 print("\n\n Duration : ", endTime - startTime)
+
 
 # Print the output
 # outputFileName = outputPath + "corpus-file-00-output.txt"
