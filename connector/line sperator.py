@@ -7,7 +7,7 @@ result=""
 i=0;
 for text in sentences:
     i+=1
-    print i
+    print(i)
     result+=(text+".\n")
 
 file=open("sentence.txt","w")

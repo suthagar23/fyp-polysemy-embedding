@@ -10,7 +10,7 @@ data = json.load(open('result.txt'))
 output=""
 i=0
 for senIndex in range(0,len(data)):
-    print i
+    print(i)
     i+=1
     wordInfo=data[str(senIndex)]['sentence']['0']['words']['info']
     for wordIndex in range(0,len(wordInfo)):
