@@ -8,13 +8,19 @@ from datetime import datetime
 import re
 import os
 from printer import  Printer
+from nltk.corpus import stopwords
 
+# basePath = "/media/suthagar/Data/Corpus/pre-processed/"
 basePath = "/media/suthagar/Data/Corpus/1-billion-word-language-modeling-benchmark-r13output/training-monolingual.tokenized.shuffled/tmp/"
 inputPath =  basePath + "pre-processed-files/"
 outputPath = basePath + "pre-processed-final-files/"
 trigramData = []
 TRIGRAM_POS_TAG = "TGRAM"
 linePrinter = Printer()
+cachedStopWords = stopwords.words("english")
+
+topWordsSample = ["address","book","government","company","say","make","take","get","come","give"]
+topWordsSampleCount = [0,0,0,0,0,0,0,0,0,0]
 
 def get_wordnet_pos(treebank_tag):
     if treebank_tag.startswith('J'):
@@ -28,6 +34,25 @@ def get_wordnet_pos(treebank_tag):
     else:
         # all other tags get mapped to x
         return 'x'
+
+def notInStopWords(word):
+    token = word.lower()
+    if token in cachedStopWords:
+        # print(word)
+        return False
+    else:
+        return True
+
+def returnFinalWordForPolysemy(word, tag):
+    word = word.lower()
+    tag = tag.upper()
+    if word in topWordsSample:
+        index = topWordsSample.index(word)
+        finalWord = word + "_" + tag + "_" + str(topWordsSampleCount[index])
+        topWordsSampleCount[index] += 1
+        return  finalWord
+    else:
+        return word + "_" + tag
 
 def connectData(inputFileName, directory):
     data = json.load(open(directory + "/" + inputFileName))
@@ -48,9 +73,9 @@ def connectData(inputFileName, directory):
                     # print(wordIndex, "Trigram found : " + trigramData[trigramMatch])
                     wordIndex+=1
                     if wordIndex != 0:
-                        output += " " + trigramData[trigramMatch] + "_" + TRIGRAM_POS_TAG
+                        output += " " + trigramData[trigramMatch].lower() + "_" + TRIGRAM_POS_TAG
                     else:
-                        output += trigramData[trigramMatch] + "_" + TRIGRAM_POS_TAG
+                        output += trigramData[trigramMatch].lower() + "_" + TRIGRAM_POS_TAG
                     trigramFound = True
                 else:
                     try:
@@ -65,20 +90,25 @@ def connectData(inputFileName, directory):
 
             if not trigramFound and not nextIsTrigram:
                 if not wordInfo[wordIndex]['isST']:  # ignores stop words
-                    if 'lemWrd' in wordInfo[wordIndex]:
-                        # for new files
-                        word = wordInfo[wordIndex]['lemWrd'] + "_" + wordInfo[wordIndex]['posT']
-                    else:
-                        # for old files
-                        pos_tag_wn = get_wordnet_pos(wordInfo[wordIndex]['posT'])
-                        if pos_tag_wn is not 'x':
-                            word = wordInfo[wordIndex]['lem'][pos_tag_wn] + "_" + pos_tag_wn.upper()
+                    if notInStopWords(wordInfo[wordIndex]['word']):
+                        if 'lemWrd' in wordInfo[wordIndex]:
+                            # for new files
+                            # word = wordInfo[wordIndex]['lemWrd'].lower() + "_" + wordInfo[wordIndex]['posT']
+                            word = returnFinalWordForPolysemy(wordInfo[wordIndex]['lemWrd'], wordInfo[wordIndex]['posT'])
                         else:
-                            word = wordInfo[wordIndex]['word'] + "_" + wordInfo[wordIndex]['posT']
-                    if wordIndex != 0:
-                        output += " " + word
-                    else:
-                        output += word
+                            # for old files
+                            pos_tag_wn = get_wordnet_pos(wordInfo[wordIndex]['posT'])
+                            if pos_tag_wn is not 'x':
+                                # word = wordInfo[wordIndex]['lem'][pos_tag_wn].lower() + "_" + pos_tag_wn.upper()
+                                word = returnFinalWordForPolysemy(wordInfo[wordIndex]['lem'][pos_tag_wn], pos_tag_wn)
+                            else:
+                                # word = wordInfo[wordIndex]['word'].lower() + "_" + wordInfo[wordIndex]['posT']
+                                word = returnFinalWordForPolysemy(wordInfo[wordIndex]['word'], wordInfo[wordIndex]['posT'])
+                        if wordIndex != 0:
+                            output += " " + word
+                        else:
+                            output += word
+
             wordIndex+=1
         output += ".\n"
 
@@ -112,3 +142,7 @@ with tf.Session() as sess:
     endTime = datetime.now()
     print("\nProcess Stopped : ", endTime)
     print("\nDuration : ", endTime - startTime)
+
+
+
+
