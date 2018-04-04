@@ -17,8 +17,8 @@ from printer import  Printer
 import sys
 import re
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+# reload(sys)
+# sys.setdefaultencoding('utf8')
 
 # basePath = "/home/suthagar/Desktop/tmp/1billion/"
 basePath = "/home/piraveena/Downloads/1-billion-word-language-modeling-benchmark-r13output/heldout-monolingual.tokenized.shuffled/"
@@ -126,22 +126,22 @@ def readByLines(processId, corpusLines, startLine, endLine, counter, isMultiProc
         output[index] = outLine[index]
 
 
-# finding trigram
-def trigram (trigramsCount):
-
-    trigramMeasures = nltk.collocations.TrigramAssocMeasures()
-    finder = nltk.TrigramCollocationFinder.from_words(listToken)
-    finder.apply_freq_filter(3)
-    listTrigram = finder.nbest(trigramMeasures.pmi, trigramsCount)
-
-    outputTrigramFileName = "trigramOutput.txt"
-    outputTrigramFile = open(outputPath + outputTrigramFileName, "w+")
-
-    for i in listTrigram:
-        trigram = '_'.join(str(e) for e in i)
-        outputTrigramFile.write(trigram + "\n")
-    outputTrigramFile.close()
-    print("Total number of words: "+ str(len(listToken)))
+# # finding trigram
+# def trigram (trigramsCount):
+#
+#     trigramMeasures = nltk.collocations.TrigramAssocMeasures()
+#     finder = nltk.TrigramCollocationFinder.from_words(listToken)
+#     finder.apply_freq_filter(3)
+#     listTrigram = finder.nbest(trigramMeasures.pmi, trigramsCount)
+#
+#     outputTrigramFileName = "trigramOutput.txt"
+#     outputTrigramFile = open(outputPath + outputTrigramFileName, "w+")
+#
+#     for i in listTrigram:
+#         trigram = '_'.join(str(e) for e in i)
+#         outputTrigramFile.write(trigram + "\n")
+#     outputTrigramFile.close()
+#     print("Total number of words: "+ str(len(listToken)))
 
 
 totalReadFilesCount = 50
