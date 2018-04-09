@@ -1,4 +1,7 @@
+import json
+
 import nltk
+import os
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
 from nltk.corpus import wordnet
@@ -22,46 +25,56 @@ def runCodeForLine(corpusLines):
 
 #finding bigram
 def findBigram (bigramsCount):
+    bigram = {}
     bigramMeasures = nltk.collocations.BigramAssocMeasures()
     finder = nltk.BigramCollocationFinder.from_words(listToken)
-    outputBigramFileName = "bigramOutput.txt"
+    outputBigramFileName = "bigramOutput"
     outputBigramFile = open(outputPath + outputBigramFileName, "w+")
     listBigram = finder.nbest(bigramMeasures.pmi, bigramsCount)
     for i in listBigram:
-        bigram = '_'.join(str(e) for e in i)
-        score = finder.score_ngram(bigramMeasures.pmi, i[0], i[1])
+        actualValue = ' '.join(str(e) for e in i)
+        bigram[actualValue] = '_'.join(str(e) for e in i)
+        # bigram = '_'.join(str(e) for e in i)
+        # score = finder.score_ngram(bigramMeasures.pmi, i[0], i[1])
         # outputBigramFile.write(bigram + "\t" + str(score) + "\n")
-        outputBigramFile.write(bigram + "\n")
+    outputBigramFile.write(json.dumps(bigram))
     outputBigramFile.close()
 
 # finding trigram
 def findTrigram (trigramsCount):
+    trigram = {}
     trigramMeasures = nltk.collocations.TrigramAssocMeasures()
     finder = nltk.TrigramCollocationFinder.from_words(listToken)
     finder.apply_freq_filter(3)
-    outputTrigramFileName = "trigramOutput.txt"
+    outputTrigramFileName = "trigramOutput"
     outputTrigramFile = open(outputPath + outputTrigramFileName, "w+")
     listTrigram = finder.nbest(trigramMeasures.pmi, trigramsCount)
     for i in listTrigram:
-        trigram = '_'.join(str(e) for e in i)
-        score = finder.score_ngram(trigramMeasures.pmi, i[0], i[1], i[2])
+        actualValue = ' '.join(str(e) for e in i)
+        trigram[actualValue] = '_'.join(str(e) for e in i)
+        # to find the pmi score
+        # score = finder.score_ngram(trigramMeasures.pmi, i[0], i[1], i[2])
         # outputTrigramFile.write(trigram + "\t"+ str(score) + "\n")
-        outputTrigramFile.write(trigram + "\n")
+    outputTrigramFile.write(json.dumps(trigram))
     outputTrigramFile.close()
 
 #finding quadgram
 def findQuadgrams (quadgramsCount):
+    quadgram = {}
     quadgramMeasures = QuadgramAssocMeasures()
     finder = nltk.QuadgramCollocationFinder.from_words(listToken)
     finder.apply_freq_filter(3)
-    outputQuadgramFileName = "quadgramOutput.txt"
+    outputQuadgramFileName = "quadgramOutput"
     outputQuadgramFile = open(outputPath + outputQuadgramFileName, "w+")
     listQuadgram = finder.nbest(quadgramMeasures.pmi, quadgramsCount)
     for i in listQuadgram:
-        quadgram = '_'.join(str(e) for e in i)
-        score = finder.score_ngram(quadgramMeasures.pmi, i[0], i[1], i[2], i[3])
+        actualValue = ' '.join(str(e) for e in i)
+        quadgram[actualValue] = '_'.join(str(e) for e in i)
+        # to find the pmi score, uncomment it
+        # quadgram = '_'.join(str(e) for e in i)
+        # score = finder.score_ngram(quadgramMeasures.pmi, i[0], i[1], i[2], i[3])
         # outputQuadgramFile.write(quadgram + "\t" + str(score) + "\n")
-        outputQuadgramFile.write(quadgram + "\n")
+    outputQuadgramFile.write(json.dumps(quadgram))
     outputQuadgramFile.close()
 
 
@@ -83,6 +96,8 @@ for i in range(0, totalReadFilesCount):
     inputFile = open(basePath + inputFileName, "r")
     corpusLines = inputFile.readlines()
     totalLines = len(corpusLines)
+    if not os.path.exists(outputPath):
+        os.makedirs(outputPath)
     print(" Total Lines : ", totalLines)
     wordnet.ensure_loaded()  # first access to wn transforms it
     # if not os.path.exists(outputPath + inputFileName):
