@@ -63,20 +63,20 @@ def connectData(inputFileName, directory):
                     # print(wordIndex, "Trigram found : " + trigramData[trigramMatch])
                     wordIndex+=1
                     if wordIndex != 0:
-                        output += " " + trigramData[trigramMatch] + "_" + TRIGRAM_POS_TAG
+                        output += " " + str(trigramData[trigramMatch]).lower() + "_" + TRIGRAM_POS_TAG
                     else:
-                        output += trigramData[trigramMatch] + "_" + TRIGRAM_POS_TAG
+                        output += str(trigramData[trigramMatch]).lower() + "_" + TRIGRAM_POS_TAG
                     trigramFound = True
                 if bigramMatch in bigramData:
                     wordIndex += 1
-                    output += bigramData[bigramMatch] + "_" + BIGRAM_POS_TAG
+                    output += " " + str(bigramData[bigramMatch]) + "_" + BIGRAM_POS_TAG
                 if quadgramMatch in quadgramData:
                     # print(wordIndex, "Trigram found : " + trigramData[trigramMatch])
                     wordIndex += 1
                     if wordIndex != 0:
-                        output += " " + quadgramData[quadgramMatch] + "_" + QUADGRAM_POS_TAG
+                        output += " " + str(quadgramData[quadgramMatch]).lower() + "_" + QUADGRAM_POS_TAG
                     else:
-                        output += quadgramData[quadgramMatch] + "_" + QUADGRAM_POS_TAG
+                        output += str(quadgramData[quadgramMatch]).lower() + "_" + QUADGRAM_POS_TAG
 
                 # else:
                 #     try:
@@ -93,14 +93,14 @@ def connectData(inputFileName, directory):
                 if not wordInfo[wordIndex]['isST']:  # ignores stop words
                     if 'lemWrd' in wordInfo[wordIndex]:
                         # for new files
-                        word = wordInfo[wordIndex]['lemWrd'] + "_" + wordInfo[wordIndex]['posT']
+                        word = str(wordInfo[wordIndex]['lemWrd']).lower() + "_" + wordInfo[wordIndex]['posT']
                     else:
                         # for old files
                         pos_tag_wn = get_wordnet_pos(wordInfo[wordIndex]['posT'])
                         if pos_tag_wn is not 'x':
-                            word = wordInfo[wordIndex]['lem'][pos_tag_wn] + "_" + pos_tag_wn.upper()
+                            word = str(wordInfo[wordIndex]['lem'][pos_tag_wn]).lower() + "_" + pos_tag_wn.upper()
                         else:
-                            word = wordInfo[wordIndex]['word'] + "_" + wordInfo[wordIndex]['posT']
+                            word = str(wordInfo[wordIndex]['word']).lower() + "_" + wordInfo[wordIndex]['posT']
                     if wordIndex != 0:
                         output += " " + word
                     else:
