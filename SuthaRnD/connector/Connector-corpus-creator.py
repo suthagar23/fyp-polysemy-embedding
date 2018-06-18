@@ -39,16 +39,6 @@ def connectData(inputFileName, directory):
             trigramFound = False
             nextIsTrigram = False
             if (wordIndex == 0 or wordIndex != len(wordInfo)-1) and len(wordInfo)>2:
-                if len(wordInfo) > 1:
-                    bigramMatch = wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex + 1]['word']
-
-                if len(wordInfo)>2:
-                    if wordIndex == 0:
-                        trigramMatch = wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex + 1]['word'] + " " + \
-                                       wordInfo[wordIndex + 2]['word']
-                    else:
-                        trigramMatch = wordInfo[wordIndex-1]['word'] + " " + wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex+1]['word']
-
                 if len(wordInfo)>3 and wordIndex< len(wordInfo)-2:
                     if wordIndex == 0:
                         quadgramMatch = wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex + 1]['word'] + " " + \
@@ -58,6 +48,15 @@ def connectData(inputFileName, directory):
                         quadgramMatch = wordInfo[wordIndex - 1]['word'] + " " + wordInfo[wordIndex]['word'] + " " + \
                                         wordInfo[wordIndex + 1]['word'] + " " + wordInfo[wordIndex + 2]['word']
 
+                else if len(wordInfo)>2:
+                    if wordIndex == 0:
+                        trigramMatch = wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex + 1]['word'] + " " + \
+                                       wordInfo[wordIndex + 2]['word']
+                    else:
+                        trigramMatch = wordInfo[wordIndex-1]['word'] + " " + wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex+1]['word']
+
+                else if len(wordInfo) > 1:
+                    bigramMatch = wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex + 1]['word']
 
                 if trigramMatch in trigramData:
                     # print(wordIndex, "Trigram found : " + trigramData[trigramMatch])
@@ -93,14 +92,21 @@ def connectData(inputFileName, directory):
                 if not wordInfo[wordIndex]['isST']:  # ignores stop words
                     if 'lemWrd' in wordInfo[wordIndex]:
                         # for new files
-                        word = str(wordInfo[wordIndex]['lemWrd']).lower() + "_" + wordInfo[wordIndex]['posT']
-                    else:
-                        # for old files
-                        pos_tag_wn = get_wordnet_pos(wordInfo[wordIndex]['posT'])
-                        if pos_tag_wn is not 'x':
-                            word = str(wordInfo[wordIndex]['lem'][pos_tag_wn]).lower() + "_" + pos_tag_wn.upper()
+                        if(wordInfo[wordIndex]['posT'].lower() == "v") :
+                            word = str(wordInfo[wordIndex]['lemWrd']).lower() + "_" + wordInfo[wordIndex]['posT']
                         else:
                             word = str(wordInfo[wordIndex]['word']).lower() + "_" + wordInfo[wordIndex]['posT']
+                    else:
+                        # for old files
+                        if(wordInfo[wordIndex]['posT'].lower() == "v") :
+                            pos_tag_wn = get_wordnet_pos(wordInfo[wordIndex]['posT'])
+                            if pos_tag_wn is not 'x':
+                                word = str(wordInfo[wordIndex]['lem'][pos_tag_wn]).lower() + "_" + pos_tag_wn.upper()
+                            else:
+                                word = str(wordInfo[wordIndex]['word']).lower() + "_" + wordInfo[wordIndex]['posT']
+                        else :
+                            word = str(wordInfo[wordIndex]['word']).lower() + "_" + wordInfo[wordIndex]['posT']
+                        
                     if wordIndex != 0:
                         output += " " + word
                     else:
