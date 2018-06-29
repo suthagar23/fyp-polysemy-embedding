@@ -48,14 +48,14 @@ def connectData(inputFileName, directory):
                         quadgramMatch = wordInfo[wordIndex - 1]['word'] + " " + wordInfo[wordIndex]['word'] + " " + \
                                         wordInfo[wordIndex + 1]['word'] + " " + wordInfo[wordIndex + 2]['word']
 
-                else if len(wordInfo)>2:
+                elif len(wordInfo)>2:
                     if wordIndex == 0:
                         trigramMatch = wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex + 1]['word'] + " " + \
                                        wordInfo[wordIndex + 2]['word']
                     else:
                         trigramMatch = wordInfo[wordIndex-1]['word'] + " " + wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex+1]['word']
 
-                else if len(wordInfo) > 1:
+                elif len(wordInfo) > 1:
                     bigramMatch = wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex + 1]['word']
 
                 if trigramMatch in trigramData:
