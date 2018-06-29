@@ -1,22 +1,8 @@
 import collections
-import matplotlib
 import json
 import os
 
-from gensim.models import KeyedVectors
 from sklearn.cluster import KMeans
-from nltk.corpus import wordnet as wn
-from sklearn.decomposition import PCA
-
-
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-
-
-# model = "/model/"
-
-# path = "/home/piraveena/Documents/data/model/vectors.txt"
-# path = "/home/piraveena/home/target_after1/model/vectors.txt"
 
 class kmeans():
     def getVector(self, lemma, file):
@@ -77,7 +63,7 @@ class kmeans():
         output_file = self.getOutput(clustersdata,numberOfClusters, outputpath,words,lemma)
         print("output is written in ", output_file)
 
-    def getinput(self, inputfile, outputpath, lemma, numberOfClusters):
+    def getInput(self, inputfile, outputpath, lemma, numberOfClusters):
         self.do_process(lemma, inputfile, outputpath, numberOfClusters)
 
     def __init__(self):
