@@ -10,10 +10,9 @@ basePath = "/home/piraveena/Downloads/1-billion-word-language-modeling-benchmark
 inputPath =  basePath + "pre-processed-files/"
 outputPath = basePath + "pre-processed-final-files/"
 colocationsPath = basePath + "colocations/"
-trigramData = []
+QUADGRAM_POS_TAG = "QGRAM"
 TRIGRAM_POS_TAG = "TGRAM"
 BIGRAM_POS_TAG = "BGRAM"
-QUADGRAM_POS_TAG = "QGRAM"
 linePrinter = Printer()
 
 def get_wordnet_pos(treebank_tag):
@@ -30,14 +29,12 @@ def get_wordnet_pos(treebank_tag):
         return 'x'
 
 def connectData(inputFileName, directory):
-    global quadgramMatch
     data = json.load(open(directory + "/" + inputFileName))
     output=""
     for senIndex,wordInfo in data.items():
         wordIndex = 0
         while wordIndex < len(wordInfo):
-            trigramFound = False
-            nextIsTrigram = False
+            ngramFound = False
             if (wordIndex == 0 or wordIndex != len(wordInfo)-1) and len(wordInfo)>2:
                 if len(wordInfo)>3 and wordIndex< len(wordInfo)-2:
                     if wordIndex == 0:
@@ -48,47 +45,42 @@ def connectData(inputFileName, directory):
                         quadgramMatch = wordInfo[wordIndex - 1]['word'] + " " + wordInfo[wordIndex]['word'] + " " + \
                                         wordInfo[wordIndex + 1]['word'] + " " + wordInfo[wordIndex + 2]['word']
 
+                    if quadgramMatch in quadgramData:
+                        # print(wordIndex, "Trigram found : " + trigramData[trigramMatch])
+
+                        if wordIndex != 0:
+                            output += " " + str(quadgramData[quadgramMatch]).lower() + "_" + QUADGRAM_POS_TAG
+                            wordIndex += 4
+                        else:
+                            output += str(quadgramData[quadgramMatch]).lower() + "_" + QUADGRAM_POS_TAG
+                            wordIndex += 3
+                        ngramFound = True
                 elif len(wordInfo)>2:
                     if wordIndex == 0:
                         trigramMatch = wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex + 1]['word'] + " " + \
                                        wordInfo[wordIndex + 2]['word']
                     else:
                         trigramMatch = wordInfo[wordIndex-1]['word'] + " " + wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex+1]['word']
+                    if trigramMatch in trigramData:
+                        # print(wordIndex, "Trigram found : " + trigramData[trigramMatch])
 
+                        if wordIndex != 0:
+                            output += " " + str(trigramData[trigramMatch]).lower() + "_" + TRIGRAM_POS_TAG
+                            wordIndex += 3
+                        else:
+                            output += str(trigramData[trigramMatch]).lower() + "_" + TRIGRAM_POS_TAG
+                            wordIndex += 2
+                        ngramFound = True
                 elif len(wordInfo) > 1:
                     bigramMatch = wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex + 1]['word']
 
-                if trigramMatch in trigramData:
-                    # print(wordIndex, "Trigram found : " + trigramData[trigramMatch])
-                    wordIndex+=1
-                    if wordIndex != 0:
-                        output += " " + str(trigramData[trigramMatch]).lower() + "_" + TRIGRAM_POS_TAG
-                    else:
-                        output += str(trigramData[trigramMatch]).lower() + "_" + TRIGRAM_POS_TAG
-                    trigramFound = True
-                if bigramMatch in bigramData:
-                    wordIndex += 1
-                    output += " " + str(bigramData[bigramMatch]) + "_" + BIGRAM_POS_TAG
-                if quadgramMatch in quadgramData:
-                    # print(wordIndex, "Trigram found : " + trigramData[trigramMatch])
-                    wordIndex += 1
-                    if wordIndex != 0:
-                        output += " " + str(quadgramData[quadgramMatch]).lower() + "_" + QUADGRAM_POS_TAG
-                    else:
-                        output += str(quadgramData[quadgramMatch]).lower() + "_" + QUADGRAM_POS_TAG
 
-                # else:
-                #     try:
-                #         trigramMatch = wordInfo[wordIndex]['word'] + " " + wordInfo[wordIndex+1]['word'] + " " + \
-                #                    wordInfo[wordIndex + 2]['word']
-                #         if trigramMatch in trigramData:
-                #             # to skip the current word appending, next iteration will replace the trigram
-                #             nextIsTrigram = True
-                #     except IndexError:
-                #         pass
+                    if bigramMatch in bigramData:
+                        wordIndex += 2
+                        output += " " + str(bigramData[bigramMatch]) + "_" + BIGRAM_POS_TAG
+                    ngramFound = True
 
-
-            if not trigramFound and not nextIsTrigram:
+            if not ngramFound:
                 if not wordInfo[wordIndex]['isST']:  # ignores stop words
                     if 'lemWrd' in wordInfo[wordIndex]:
                         # for new files
