@@ -105,6 +105,6 @@ for i in range(0, totalReadFilesCount):
     runCodeForLine(corpusLines)
     inputFile.close()
 
-findBigram(NO_OF_BIGRAMS)
-findTrigram(NO_OF_TRIGRAMS)
 findQuadgrams(NO_OF_QUADGRAMS)
+findTrigram(NO_OF_TRIGRAMS)
+findBigram(NO_OF_BIGRAMS)-
