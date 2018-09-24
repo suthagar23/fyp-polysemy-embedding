@@ -1,0 +1,28 @@
+{
+  "corpusFileDirectory" : "corpus",
+  "preprocessFileDirectory" : "preprocessedFiles",
+  "embeddingFilesDirectory" : "preprocessedFinalFiles",
+  "coLocations" : {
+    "coLocationsPath": "colocations",
+    "noOfQuadGrams" : 2000,
+    "quadGramPosTag" : "QGRAM",
+    "quadGramFileName" : "quadgramOutput",
+    "noOfTriGrams" : 5000,
+    "triGramPosTag" : "TGRAM",
+    "triGramFileName" : "trigramOutput",
+    "noOfBiGrams" : 8000,
+    "biGramPosTag" : "BGRAM",
+    "biGramFileName" : "bigramOutput"
+  },
+
+  "totalFilesToReadFromDirectory" : 3,
+  "numberOfLinesPerFileToWrite" : 2,
+  "inputFile" : {
+    "filePrefixNotation" : "news.en-000",
+    "fileSuffixNotation" : "-of-00100"
+  },
+  "outputFile" : {
+    "filePrefixNotation" : "",
+    "fileSuffixNotation" : "-output-Schemas"
+  }
+}
