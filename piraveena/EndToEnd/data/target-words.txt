@@ -1,3 +1,0 @@
-book_N
-rock_N
-address_N
