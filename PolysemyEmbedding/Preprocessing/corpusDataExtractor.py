@@ -68,6 +68,7 @@ def runCodeForLine(line,index):
         wordOut = {}
 
         for token in words:
+            token = token.lower()
             listToken.append(token)
 
             strWordCounter = str(wordCounter)

@@ -6,7 +6,7 @@ import re
 import os
 from printer import  Printer
 
-basePath = "/home/piraveena/Downloads/1-billion-word-language-modeling-benchmark-r13output/training-monolingual.tokenized.shuffled/"
+basePath = "/home/suthagar/Desktop/test_delete/data/"
 inputPath =  basePath + "pre-processed-files/"
 outputPath = basePath + "pre-processed-final-files/"
 colocationsPath = basePath + "colocations/"

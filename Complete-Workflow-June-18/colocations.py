@@ -9,7 +9,7 @@ import re
 from nltk.metrics.association import QuadgramAssocMeasures
 
 listToken = []
-basePath = "/home/piraveena/Downloads/1-billion-word-language-modeling-benchmark-r13output/training-monolingual.tokenized.shuffled/"
+basePath = "/home/suthagar/Desktop/test_delete/data/"
 outputPath = basePath + "colocations/"
 
 def runCodeForLine(corpusLines):
@@ -107,4 +107,4 @@ for i in range(0, totalReadFilesCount):
 
 findQuadgrams(NO_OF_QUADGRAMS)
 findTrigram(NO_OF_TRIGRAMS)
-findBigram(NO_OF_BIGRAMS)-
+findBigram(NO_OF_BIGRAMS)

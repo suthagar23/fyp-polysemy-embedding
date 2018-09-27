@@ -22,7 +22,7 @@ import os
 # sys.setdefaultencoding('utf8')
 
 # basePath = "/home/suthagar/Desktop/tmp/1billion/"
-basePath = "/media/suthagar/Data/Corpus/1-billion-word-language-modeling-benchmark-r13output/training-monolingual.tokenized.shuffled/delete/"
+basePath = "/home/suthagar/Desktop/test_delete/data/"
 
 outputPath = basePath + "pre-processed-files/"
 lemmatizer = WordNetLemmatizer()
@@ -77,6 +77,7 @@ def runCodeForLine(line,index):
         wordOut = {}
 
         for token in words:
+            token = token.lower()
             listToken.append(token)
 
             strWordCounter = str(wordCounter)
