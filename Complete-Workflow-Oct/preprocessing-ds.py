@@ -1,28 +1,17 @@
 
-import json
-from datetime import datetime
-from imp import reload
-import tensorflow as tf
 import concurrent.futures
-import multiprocessing
-import nltk
-from nltk.corpus import wordnet
+import json
+import os
+import re
+from datetime import datetime
 from nltk.corpus import stopwords
+from nltk.corpus import wordnet
+from nltk.corpus.reader.wordnet import WordNetError
+from nltk.stem import WordNetLemmatizer
+from nltk.tag import pos_tag
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
-from nltk.tag import pos_tag
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus.reader.wordnet import WordNetError
-# import multiprocessing as mp
-from threading import Thread
-
-from printer import  Printer
-import sys
-import re
-import os
-# reload(sys)
-# sys.setdefaultencoding('utf8')
-
+from printer import Printer
 
 basePath = "/media/suthagar/Data/Corpus/1-billion-word-language-modeling-benchmark-r13output/training-monolingual.tokenized.shuffled/"
 outputPath = "/media/suthagar/Data/Corpus/Sep29/pre-processed-files/"
@@ -33,47 +22,21 @@ cachedStopWords = stopwords.words("english")
 listToken = []
 OUTPUT_FILE_LINE_COUNT = 3000
 TOTAL_FILES_FOR_READ = 99
-# trigram using nltk
-NO_OF_TRIGRAMS = 5000
-
-# map nltk pos tag results to wordnet pos tag arguments
-def get_wordnet_pos(treebank_tag):
-    if treebank_tag.startswith('J'):
-        return 'a'
-    elif treebank_tag.startswith('V'):
-        return 'v'
-    elif treebank_tag.startswith('N'):
-        return 'n'
-    elif treebank_tag.startswith('R'):
-        return 'r'
-    else:
-        # all other tags get mapped to x
-        return 'x'
 
 def runCodeForLine(line,index):
     err=0
-    # outLine = {}
-    # outLine[index]= {}
-    # outLine[index]['actualLine'] = line               # Removed to reduce the output file size
     sentencesInLine = sent_tokenize(line)
-    # outLine[index]['sentTokenize'] = sentencesInLine  # Removed to reduce the output file size
-    # outLine['sen'] = {}
     sentCounter = 0
     sentenceOut = {}
     tmpOut = []
     for sentence in sentencesInLine:
-
-        # sentence = re.sub(r'(https|http|ftp)?\s*:\s*\/\s*\/\s*(\w{3}\s*\.|\/|\?|\=|\&|\%)*\b', '', sentence)
         sentence =re.sub(r'((https|http|ftp)\s*:\s*\/\s*\/\s*)?(\w{3}\s*\.).*(\.).*', '', sentence)
         sentence = ''.join(e for e in sentence if e.isalpha() or e.isspace())
 
         sentenceCounter = str(sentCounter)
         sentenceOut[sentenceCounter] = {}
-        # sentenceOut[sentenceCounter]['actual'] = sentence     # Removed to reduce the output file size
         sentenceOut[sentenceCounter]['wds'] = {}
         words = word_tokenize(sentence)
-
-        # sentenceOut[sentenceCounter]['wds']['wdTn'] = words
         sentenceOut[sentenceCounter]['wds']['info'] = []
         wordCounter = 0
         wordOut = {}
@@ -81,10 +44,8 @@ def runCodeForLine(line,index):
         for token in words:
             token = token.lower()
             listToken.append(token)
-
             strWordCounter = str(wordCounter)
             wordCounter += 1
-
             wordOut[strWordCounter] = {}
             wordOut[strWordCounter]['word'] = token           # Removed to reduce the output file size
             if token in cachedStopWords:
@@ -92,10 +53,8 @@ def runCodeForLine(line,index):
             else:
                 wordOut[strWordCounter]['isST'] = False
 
-
                 #POS Tag from nltk
                 nltk_pos_tag = pos_tag([token])[0][1]
-
                 wordOut[strWordCounter]['posT']= nltk_pos_tag
 
                 try:
@@ -120,10 +79,8 @@ def runCodeForLine(line,index):
         sentCounter+=1
     return tmpOut
 
-# processCompletedState=[]
 def readByLines(corpusLines, totalLines, inputFileName):
     outLine = {}
-    # print(" Process Id : ",processId,"( From line ",startLine," to ",endLine,")")l
     counter = 0
     fileCounter = 0
     processDataSaved = True
@@ -133,13 +90,11 @@ def readByLines(corpusLines, totalLines, inputFileName):
             completedPercentage = round((counter)/(totalLines-1)*100,2)
         else:
             completedPercentage = 100
-
         # linePrinter.printNormal(completedPercentage * 8 / len(FileNames))
 
         index = str(counter)
         if(corpusLines[line]!="" or corpusLines[line].replace("\n")!=""):
             outLine[index] = runCodeForLine(corpusLines[line], index)
-        # output[index] = outLine[index]
 
         if(counter%OUTPUT_FILE_LINE_COUNT == 0 and counter!=0):
             dumbOutFile(counter,fileCounter, outLine, inputFileName)
@@ -151,8 +106,6 @@ def readByLines(corpusLines, totalLines, inputFileName):
     # For last batch data
     if not processDataSaved:
         dumbOutFile(counter, fileCounter, outLine, inputFileName)
-    # Finally write a file with the created file names
-    # writeOutputFilesSchemaJSON(inputFileName, fileCounter)
 
 def dumbOutFile(counter, fileCounter, data, inputFileName):
     outputFileName = inputFileName + "-out-" + str(fileCounter)

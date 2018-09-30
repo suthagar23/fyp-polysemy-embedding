@@ -1,13 +1,9 @@
-import json
-from pprint import pprint
-import tensorflow as tf
-from datetime import datetime
-import time
-import re
-import os
-from printer import  Printer
 import concurrent.futures
-import multiprocessing
+import json
+import os
+import time
+from datetime import datetime
+from printer import Printer
 
 basePath = "/media/suthagar/Data/Corpus/Sep29/"
 inputPath =  basePath + "pre-processed-files/"
