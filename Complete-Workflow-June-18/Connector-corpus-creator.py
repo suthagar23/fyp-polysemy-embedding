@@ -6,7 +6,7 @@ import re
 import os
 from printer import  Printer
 
-basePath = "/home/suthagar/Desktop/test_delete/data/"
+basePath = "/media/suthagar/Data/Corpus/Sep29/"
 inputPath =  basePath + "pre-processed-files/"
 outputPath = basePath + "pre-processed-final-files/"
 colocationsPath = basePath + "colocations/"
@@ -20,7 +20,7 @@ def get_wordnet_pos(treebank_tag):
         return 'a'
     elif treebank_tag.startswith('V'):
         return 'v'
-    elif treebank_tag.startswith('N'):
+    elif treebank_tag.startswith('N') and treebank_tag.endswith('S'):
         return 'n'
     elif treebank_tag.startswith('R'):
         return 'r'
@@ -82,21 +82,18 @@ def connectData(inputFileName, directory):
 
             if not ngramFound:
                 if not wordInfo[wordIndex]['isST']:  # ignores stop words
+                    pos_tag_wn = get_wordnet_pos(wordInfo[wordIndex]['posT'])
                     if 'lemWrd' in wordInfo[wordIndex]:
                         # for new files
-                        if(wordInfo[wordIndex]['posT'].lower() == "v") :
+                        if pos_tag_wn is not "x":
                             word = str(wordInfo[wordIndex]['lemWrd']).lower() + "_" + wordInfo[wordIndex]['posT']
                         else:
                             word = str(wordInfo[wordIndex]['word']).lower() + "_" + wordInfo[wordIndex]['posT']
                     else:
                         # for old files
-                        if(wordInfo[wordIndex]['posT'].lower() == "v") :
-                            pos_tag_wn = get_wordnet_pos(wordInfo[wordIndex]['posT'])
-                            if pos_tag_wn is not 'x':
-                                word = str(wordInfo[wordIndex]['lem'][pos_tag_wn]).lower() + "_" + pos_tag_wn.upper()
-                            else:
-                                word = str(wordInfo[wordIndex]['word']).lower() + "_" + wordInfo[wordIndex]['posT']
-                        else :
+                        if pos_tag_wn is not 'x':
+                            word = str(wordInfo[wordIndex]['lem'][pos_tag_wn]).lower() + "_" + pos_tag_wn.upper()
+                        else:
                             word = str(wordInfo[wordIndex]['word']).lower() + "_" + wordInfo[wordIndex]['posT']
                         
                     if wordIndex != 0:
