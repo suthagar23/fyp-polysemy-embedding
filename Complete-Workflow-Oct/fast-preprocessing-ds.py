@@ -12,10 +12,11 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
 from printer import Printer
+import multiprocessing
 
-basePath = "/media/suthagar/Data/Corpus/1-billion-word-language-modeling-benchmark-r13output/training-monolingual.tokenized.shuffled/"
-outputPath = "/media/suthagar/Data/Corpus/Sep29/pre-processed-files/"
-colocationsPath = "/media/suthagar/Data/Corpus/Sep29/colocations/"
+basePath = "/home/ubuntu/work/1-billion-word-language-modeling-benchmark-r13output/training-monolingual.tokenized.shuffled/"
+outputPath = "/home/ubuntu/work/pre-processed-files/"
+colocationsPath = "/home/ubuntu/work/colocations/"
 
 lemmatizer = WordNetLemmatizer()
 linePrinter = Printer()
@@ -40,7 +41,7 @@ def get_wordnet_pos(treebank_tag):
         # all other tags get mapped to x
         return 'x'
 
-def makeCorpus(data):
+def makeCorpus(data, lock):
     output=""
     outputWP = ""
     for senIndex,wordInfo in data.items():
@@ -116,13 +117,13 @@ def makeCorpus(data):
             wordIndex+=1
         output += ".\n"
         outputWP += ".\n"
-
-    f = open(outputPath + "preprocessed-corpus-withPOS-" + fileUniqueId + ".txt", "a")
-    f.write(output)
-    f.close()
-    f = open(outputPath + "preprocessed-corpus-withoutPOS-" + fileUniqueId + ".txt", "a")
-    f.write(outputWP)
-    f.close()
+    with lock:
+        f = open(outputPath + "preprocessed-corpus-withPOS-" + fileUniqueId + ".txt", "a")
+        f.write(output)
+        f.close()
+        f = open(outputPath + "preprocessed-corpus-withoutPOS-" + fileUniqueId + ".txt", "a")
+        f.write(outputWP)
+        f.close()
 
 
 def runCodeForLine(line):
@@ -136,7 +137,7 @@ def runCodeForLine(line):
     posTaggedWords = pos_tag_sents(tokens)
     return posTaggedWords[0]
 
-def readByLines(corpusLines, totalLines, inputFileName):
+def readByLines(corpusLines, totalLines, inputFileName, lock):
     outLine = {}
     counter = 0
     for line in range(0, totalLines):
@@ -146,7 +147,7 @@ def readByLines(corpusLines, totalLines, inputFileName):
         counter += 1
 
         if counter%2000 == 0:
-            makeCorpus(outLine)
+            makeCorpus(outLine, lock)
             outLine = {}
             print(" Writing to corpus file from : " + inputFileName + " [" + str(counter) + " / " + str(totalLines) +"]")
 
@@ -157,14 +158,15 @@ def dumbOutFile(counter, fileCounter, data, inputFileName):
     outputFile.write(json.dumps(data))
     outputFile.close()
 
-def doWorker(inputFileName):
+def doWorker(inputFileName, lock):
+    print(lock)
     inputFile = open(basePath + inputFileName, "r")
     corpusLines = inputFile.readlines()
     totalLines = len(corpusLines)
     print(" Started File - ", inputFileName, " | Total Lines : ", totalLines)
     # if not os.path.exists(outputPath + inputFileName):
     #     os.makedirs(outputPath + inputFileName)
-    readByLines(corpusLines, totalLines, inputFileName)
+    readByLines(corpusLines, totalLines, inputFileName, lock)
     inputFile.close()
     return inputFileName
 
@@ -185,9 +187,12 @@ for i in range(0, TOTAL_FILES_FOR_READ):
 
 
 wordnet.ensure_loaded()
-with concurrent.futures.ProcessPoolExecutor() as executor:
-    for lemma, result in zip(FileNames, executor.map(doWorker, FileNames)):
-        print(f"Finished for input file {lemma} was saved inside the {result}")
+pool = concurrent.futures.ProcessPoolExecutor()
+m = multiprocessing.Manager()
+lock = m.Lock()
+futures = [pool.submit(doWorker, FileName, lock) for FileName in FileNames]
+for future in futures:
+    print(f"Finished and saved inside the {future.result()}")
 
 endTime = datetime.now()
 print("\n\n Process Stopped : ", endTime)
