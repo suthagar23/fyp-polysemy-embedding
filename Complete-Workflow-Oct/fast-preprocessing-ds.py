@@ -127,7 +127,7 @@ def makeCorpus(data, lock):
 
 
 def runCodeForLine(line):
-    sentencesInLine = sent_tokenize(line)
+    sentencesInLine = sent_tokenize(line.lower())
     tokens = []
     for sentence in sentencesInLine:
         sentence =re.sub(r'((https|http|ftp)\s*:\s*\/\s*\/\s*)?(\w{3}\s*\.).*(\.).*', '', sentence)
