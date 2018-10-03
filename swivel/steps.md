@@ -1,6 +1,6 @@
 # Swivel Steps
 
-##Pre Processing for Swivel
+## Pre Processing for Swivel
 1. Need normal CPU based instance for pre-matrix creation (Need Tensorflow - Python2) . 
 Use AWS Deeplearning-Ubuntu AMI for Instance
 2. Configure your aws, and then unlimt the file count
