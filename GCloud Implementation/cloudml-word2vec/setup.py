@@ -1,7 +1,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-REQUIRED_PACKAGES = ['tensorflow==1.5', 'urllib3==1.22']
+REQUIRED_PACKAGES = ['tensorflow==2.5.3', 'urllib3==1.22']
 
 setup(
     name='trainer',
